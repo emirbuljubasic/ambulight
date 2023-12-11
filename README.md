@@ -4,26 +4,23 @@
 
 VOZILO - kontrola IR blaster-a i DAC-a
 
-## Secret Key
-
-#define __SECRET_KEY "vr10vr10tajn1pa55"
-
 ## Funkcije
 
-funkcije namijenje samo za testing/razumijevanje koristenja modula - nepotrebne u finalnom kodu (DMA)
+void sendPWMbyteHigh();         //send single logical HIGH  
+void sendPWMByteLow();          //send single logical LOW
 
-void sendIRByte();      	// send single IR byte;  
-void sendAudioByte();   	// send single audio byte;
+void sendFrame();               //loop size(24) koji poziva sendPWMbyteHigh/Low da posalje
+frame
 
-void initDMA();			    // DMA postaviti za rad u circular mode, const slanje podataka sve dok je enable-ovan  
-void initTIM();			    // TIM postaviti u PWM mod za slanje IR koda na GPIOx
+void sendLight(uint8_t, red, uint8_t green, uint_8t blue);  //give RGB values
+and display on single DIODE
 
-void initDAC();			    // undefined
+void sendLightArray(uint8_t *arr, uint8_t size);            //poziva sendLight size puta gdje je arr velicine size * 3 (R,G,B) vrijednost svake diode. Za semafor 3x3 size = 27, arr ce imati ukupno 81 vrijednosti.
 
-void startIR();			    // zapoceti prijenos IR koda - enable DMA  
-void startAudioPulse(); 	// zapoceti prijenos audio zvuka - enable DMA  
+void setGreen(uint8_t period);  // postaviti semafor na zeleno svijetlo period
+sekundi  
+void setRed(uint8_t period);    // postaviti semafor na crveno svijetlo period
+sekundi  
 
-void stopIR();			    // prekinuti prijenos IR koda - disable DMA  
-void stopAudioPulse();		// prekinuti prijenos audio zvuka - disable DMA
+void GPIOx_IRQHandler(void)     // dug ISR da blokira izvrsavanje main() koda, manuelno postavlja semafor na crveno i cuva sve do ne prestane primati IRQ, tj. svaki IRQ ga blokira na 20 sekundi, 20s nakon prijema zadnjeg IRQ prestaje blokiranje semafora
 
-void Button_IRQHandler();	// button ISR - change value bool state;
