@@ -6,8 +6,9 @@ VOZILO - kontrola IR blaster-a i DAC-a
 
 ## Secret Key
 
-
 #define __SECRET_KEY "vr10vr10tajn1pa55"
+
+## Funkcije
 
 funkcije namijenje samo za testing/razumijevanje koristenja modula - nepotrebne u finalnom kodu (DMA)
 
