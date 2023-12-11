@@ -1,28 +1,15 @@
-# VOZILO
+# DETEKTOR
 
 ## Description
 
-VOZILO - kontrola IR blaster-a i DAC-a
+DETEKTOR - kontrola IR reciever-a i MIC-a
 
 ## Secret Key
 
+#define __SECRET_KEY "vr10vr10tajn1pa55"  
 
-#define __SECRET_KEY "vr10vr10tajn1pa55"
+void initDMA();         // uvijek EN, slusa na GPIO port, spojen na TIM, M0AR =
+rxBuffer  
+void initTIM();         // PWM INPUT CAPTURE na GPIO pin gdje je IR reciever  
 
-funkcije namijenje samo za testing/razumijevanje koristenja modula - nepotrebne u finalnom kodu (DMA)
-
-void sendIRByte();      	// send single IR byte;  
-void sendAudioByte();   	// send single audio byte;
-
-void initDMA();			    // DMA postaviti za rad u circular mode, const slanje podataka sve dok je enable-ovan  
-void initTIM();			    // TIM postaviti u PWM mod za slanje IR koda na GPIOx
-
-void initDAC();			    // undefined
-
-void startIR();			    // zapoceti prijenos IR koda - enable DMA  
-void startAudioPulse(); 	// zapoceti prijenos audio zvuka - enable DMA  
-
-void stopIR();			    // prekinuti prijenos IR koda - disable DMA  
-void stopAudioPulse();		// prekinuti prijenos audio zvuka - disable DMA
-
-void Button_IRQHandler();	// button ISR - change value bool state;
+void gpioInterrupt();   // posalji interrupt na GPIO pin gdje je spojen semafor  
