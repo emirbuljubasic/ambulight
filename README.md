@@ -8,6 +8,8 @@ DETEKTOR - kontrola IR reciever-a i MIC-a
 
 #define __SECRET_KEY "vr10vr10tajn1pa55"  
 
+## Funkcije
+
 void initDMA();         // uvijek EN, slusa na GPIO port, spojen na TIM, M0AR =
 rxBuffer  
 void initTIM();         // PWM INPUT CAPTURE na GPIO pin gdje je IR reciever  
