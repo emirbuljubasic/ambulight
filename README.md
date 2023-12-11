@@ -14,15 +14,15 @@ funkcije namijenje samo za testing/razumijevanje koristenja modula - nepotrebne 
 void sendIRByte();      	// send single IR byte;
 void sendAudioByte();   	// send single audio byte;
 
-void initDMA();			// DMA postaviti za rad u circular mode, const slanje podataka sve dok je enable-ovan
-void initTIM();			// TIM postaviti u PWM mod za slanje IR koda na GPIOx
+void initDMA();			    // DMA postaviti za rad u circular mode, const slanje podataka sve dok je enable-ovan
+void initTIM();			    // TIM postaviti u PWM mod za slanje IR koda na GPIOx
 
-void initDAC();			// undefined
+void initDAC();			    // undefined
 
-void startIR();			// zapoceti prijenos IR koda - enable DMA
+void startIR();			    // zapoceti prijenos IR koda - enable DMA
 void startAudioPulse(); 	// zapoceti prijenos audio zvuka - enable DMA
 
-void stopIR();			// prekinuti prijenos IR koda - disable DMA
+void stopIR();			    // prekinuti prijenos IR koda - disable DMA
 void stopAudioPulse();		// prekinuti prijenos audio zvuka - disable DMA
 
 void Button_IRQHandler();	// button ISR - change value bool state;
