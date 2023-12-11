@@ -8,12 +8,14 @@ VOZILO - kontrola IR blaster-a i DAC-a
 
 #define __SECRET_KEY "vr10vr10tajn1pa55"
 
-## Funkcije
+## Funkcije - temp
 
 funkcije namijenje samo za testing/razumijevanje koristenja modula - nepotrebne u finalnom kodu (DMA)
 
 void sendIRByte();      	// send single IR byte;  
 void sendAudioByte();   	// send single audio byte;
+
+## Funkcije
 
 void initDMA();			    // DMA postaviti za rad u circular mode, const slanje podataka sve dok je enable-ovan  
 void initTIM();			    // TIM postaviti u PWM mod za slanje IR koda na GPIOx
