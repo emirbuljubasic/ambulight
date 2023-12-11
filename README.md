@@ -1,22 +1,28 @@
-VOZILO:
+# VOZILO
 
-#define __SECRET_KEY "vr10vr10tajn1pa55" 
+## Description
 
-->ove 2 fukcije se nece koristiti u finalnom kodu, samo za testing/razumijevanje funkcionalnosti 
-->DMA u finalnoj implementaciji, send single byte-a nepotreban.
-void sendIRByte();      // send single IR byte;
-void sendAudioByte();   // send single audio byte;
+VOZILO - kontrola IR blaster-a i DAC-a
 
+## Secret Key
 
 
-void initDMA();         // postavit u circular mode da const. salje, koristit EN ~EN za
-void paljenje/gasenje
-void initTIM();         // postavit timer u PWM za slanje IR koda
-void initDAC();
+#define __SECRET_KEY "vr10vr10tajn1pa55"
 
-void startIR();         // zapoceti prijenos IR koda, tj enable DMA podesen na CIRC buffer
-void startAudioPulse(); // zapoceti prijenos audio signala, enable DMA
-void stopIR();          // prekinuti prijenos IR koda, disable DMA
-void stopAudioPulse();  // prekinuti prijenos audio signala, disable DMA
+funkcije namijenje samo za testing/razumijevanje koristenja modula - nepotrebne u finalnom kodu (DMA)
 
-void Button_IRQHandler(); // button ISR function to change the value of bool state;
+void sendIRByte();      	// send single IR byte;
+void sendAudioByte();   	// send single audio byte;
+
+void initDMA();			// DMA postaviti za rad u circular mode, const slanje podataka sve dok je enable-ovan
+void initTIM();			// TIM postaviti u PWM mod za slanje IR koda na GPIOx
+
+void initDAC();			// undefined
+
+void startIR();			// zapoceti prijenos IR koda - enable DMA
+void startAudioPulse(); 	// zapoceti prijenos audio zvuka - enable DMA
+
+void stopIR();			// prekinuti prijenos IR koda - disable DMA
+void stopAudioPulse();		// prekinuti prijenos audio zvuka - disable DMA
+
+void Button_IRQHandler();	// button ISR - change value bool state;
