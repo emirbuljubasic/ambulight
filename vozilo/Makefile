@@ -1,12 +1,15 @@
+# User
+USER := $(shell whoami)
+
 # Put your stlink folder here so make burn will work.
-STLINK=/home/fazlina/msut/STM32F407/stlink
+STLINK=/home/$(USER)/msut/STM32F407/stlink
 
 # Binaries will be generated with this name (.elf, .bin, .hex, etc)
 PROJ_NAME=main
 
 # Put your STM32F4 library code directory here
 #STM_COMMON=/home/fazlina/msut/STM32F407
-STM_COMMON=/home/fazlina/msut/STM32F407
+STM_COMMON=/home/$(USER)/msut/STM32F407
 
 # Put your source files here (or *.c, etc)
 SRCS = main.c system_stm32f4xx.c usart.c delay.c misc.c 
@@ -56,3 +59,4 @@ upload: proj
 	$(STLINK)/st-flash write $(PROJ_NAME).bin 0x08000000
 	#../flash_write_counter	
 
+reload: clean all upload
