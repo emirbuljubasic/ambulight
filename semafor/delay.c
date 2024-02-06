@@ -49,7 +49,7 @@ void delay_250ns(uint32_t us) { /// delay in us
   RCC->APB1ENR |= RCC_APB1ENR_TIM12EN; //
   TIM12->PSC = 0x0001 - 0x0001;        //
                                        //
-  TIM12->ARR = 0x0015 / 3;             // reload value set to 1 us
+  TIM12->ARR = 0x0015;                 // reload value set to 1 us
   TIM12->CR1 = 0x0084;                 // ARPE On, CMS disable, Up counting
                                        // UEV disable, TIM4 enable(p392)
 

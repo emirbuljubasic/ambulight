@@ -21,7 +21,6 @@ void send(int green, int red, int blue);
 
 void set_LED(int LEDnum, int red, int green, int blue);
 void WS2812_send(void);
-void reset_LED(void);
 
 void reset(void);
 
@@ -36,39 +35,14 @@ int main(void) {
 
   init_TIM4();
   init_DMA1();
-
-  // int arr[11] = {24, 25, 26, 39, 40, 41, 42, 55, 56, 57, 58};
-  // int arr2[13] = {27, 31, 32, 36, 43, 45, 47, 48, 49, 51, 52, 59, 63};
   int i;
   for (i = 0; i < MAX_LED; ++i) {
-    set_LED(i, 255, i, i * 2);
+    set_LED(i, 255, 0, 0);
   }
-  WS2812_send();
-  delay_ms(5000);
-
-  DMA2->LIFCR |= DMA_LIFCR_CTCIF3;
-
-  printUSART2("pripremam drugi set\n");
-  for (i = 0; i < MAX_LED; ++i) {
-    set_LED(i, 0, 255, 0);
-  }
-
   WS2812_send();
 
   // send(0, 255, 255);
   while (1) {
-
-    // for (i = 0; i < MAX_LED; ++i) {
-    //   set_LED(i, 255, 255, 0);
-    // }
-    // WS2812_send();
-    // delay_ms(2000);
-    //
-    // for (i = 0; i < MAX_LED; ++i) {
-    //   set_LED(i, 255, 0, 0);
-    // }
-    // WS2812_send();
-    // delay_ms(2000);
   }
 }
 
@@ -142,8 +116,8 @@ void init_DMA1() {
   DMA1_Stream7->CR |= DMA_SxCR_PSIZE_0;
 
   // DMA1_Stream7->CR |= DMA_SxCR_EN;
-  // NVIC_SetPriority(DMA2_Stream7_IRQn, 0); // mozda?
-  NVIC_EnableIRQ(DMA2_Stream7_IRQn); // mozda?
+  NVIC_SetPriority(DMA2_Stream7_IRQn, 0); // mozda?
+  NVIC_EnableIRQ(DMA2_Stream7_IRQn);      // mozda?
 }
 
 void DMA2_Stream7_IRQHandler(void) {
@@ -196,23 +170,11 @@ void WS2812_send(void) {
     index++;
   }
 
-  TIM4->CR1 |= TIM_CR1_CEN;
   DMA1_Stream7->CR |= DMA_SxCR_EN;
 
-  // while (!datasentflag) {
-  // printUSART2("u petlji\n");
-  // }
-  // DMA1_Stream7->CR &= ~DMA_SxCR_EN;
-  printUSART2("izaso\n");
+  while (!datasentflag)
+    ;
   datasentflag = 0;
 }
 
-void reset_LED(void) {
-  int i;
-  for (i = 0; i < MAX_LED; ++i) {
-    LED_Data[i][0] = i;
-    LED_Data[i][1] = 0;
-    LED_Data[i][2] = 0;
-    LED_Data[i][3] = 0;
-  }
-}
+void reset(void) {}
