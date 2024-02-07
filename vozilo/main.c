@@ -2,67 +2,74 @@
 #include "./stm32f4xx.h"
 #include "./usart.h"
 
-#define IR_50 5000
-#define IR_25 2500
+#define IR_50 500
+#define IR_25 250
+#define IR_MARGIN_0 150
+#define IR_MARGIN_1 350
+#define IR_MARGIN_2 600
+#define PERIOD_MARGIN_LOW 900
+#define PERIOD_MARGIN_HIGH 1100
+
+volatile irq_counter = 0;
+uint16_t pwm_recieved_bits = 0x0000;
 
 void init_TIM4();
 void init_TIM1();
 
 /// wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-/// IR LED:             +(anode) PD12 |^| GND (cathode)-
-/// IR PHOTOTRANSISTOR: +(collector) +5V |^| PA8 (emitter)-
+/// IR LED:             +(anode) PB6 |^| GND (cathode)-
+/// IR PHOTODIODE:      +(anode) +5V |^| PA8 (chatode)-
 
 int main(void) {
-  /// wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+  /// Initializing PA0
   RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
   GPIOA->MODER &= ~0x00000003;
   GPIOA->PUPDR &= ~0x00000003;
   GPIOA->PUPDR |= 0x00000002;
 
-  GPIOA->MODER &= ~0x0000000C;
-  GPIOA->PUPDR &= ~0x00030000;
-  GPIOA->PUPDR |= 0x00020000;
-  /// wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+  // Initializing PD15 to mirror IR output
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;
+  GPIOD->MODER |= 0x02000000;
+  GPIOD->OTYPER |= 0x00000000;
+  GPIOD->AFR[1] |= 0x00020000;
+
   uint32_t cnt = 0, time;
-  const uint8_t pwm_arr_size = 15;
-  uint16_t pwm[15] = {IR_25, IR_25, IR_25, IR_50, IR_50, IR_50, IR_25, IR_50,
-                      IR_25, IR_50, IR_25, IR_50, IR_50, IR_25, IR_25};
+  uint8_t pwm_arr_size = 16;
+  uint16_t pwm[16] = {IR_25, IR_50, IR_25, IR_50, 
+                      IR_50, IR_50, IR_25, IR_25, 
+                      IR_25, IR_25, IR_50, IR_50, 
+                      IR_25, IR_50, IR_25, IR_50}; // LSB FIRST!!
+  uint16_t ambulance_id = 0xAC3A;
   uint8_t pwm_cnt = 0;
   uint8_t lights_on = 0;
 
-  initUSART2(USART2_BAUDRATE_115200);
+  initUSART2(USART2_BAUDRATE_921600);
   printUSART2("\nwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n");
   printUSART2("w Starting test app...");
   printUSART2("\nwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n");
 
-  /// wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-  ///  setup PWM on TIM4 CH1, CH2, CH3 & CH4 -> PD12, PD13, PD14 & PD15
-  ///----------------------------------------------------------------
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;
-  GPIOD->MODER |= 0x12000000;
-  GPIOD->OTYPER |= 0x00000000;
-  GPIOD->OSPEEDR |= 0x30000000;
-  GPIOD->AFR[1] |= 0x00020000;
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
-  GPIOB->MODER |= 0x00002000;
-  GPIOB->OTYPER |= 0x00000000;
-  GPIOB->AFR[0] |= 0x02000000;
-
   init_TIM1();
-  init_TIM4();
+  // init_TIM4();
 
   while (1) {
-    // printUSART2("-> SW: test [%d]\n",cnt);
-    // uint32_t utmp32 = TIM4->CNT;
-    // printUSART2("-> TIM4->CNT: [%d]\n",utmp32);
-    // cnt++;
+    if (irq_counter == pwm_arr_size) {
+      printUSART2("GREAT SUCCESS!\n");
+      printUSART2("%xw\n", pwm_recieved_bits);
+      printUSART2("%xw\n", ambulance_id);
+      pwm_recieved_bits = 0x0000;
+      irq_counter = 0;
+      time = getSYSTIMER();
+      printUSART2("TIME = %xw\n\n", time);
+    }
 
     if ((GPIOA->IDR & 0x0001) == 0x0001) {
+      delay_ms(500);
       printUSART2("Button pressed!\n");
       if (!lights_on) {
         printUSART2("Turning on...\n\n");
         lights_on = 1;
         init_TIM4();
+        initSYSTIMER();
       } else {
         printUSART2("Turning off...\n\n");
         lights_on = 0;
@@ -71,53 +78,56 @@ int main(void) {
         TIM4->EGR |= TIM_EGR_UG;
         delay_ms(1);
         TIM4->CR1 &= ~TIM_CR1_CEN;
-        delay_ms(300);
+        delay_ms(100);
+        irq_counter = 0;              // prijemnik!!
+        pwm_recieved_bits = 0x0000;   // prijemnik!!
       }
     }
 
     if (lights_on) {
       TIM4->CCR1 = pwm[pwm_cnt];
-      delay_ms(500);
+      delay_ms(50);
       pwm_cnt++;
       if (pwm_cnt == pwm_arr_size) {
         pwm_cnt = 0;
       }
     }
-
-    if ((GPIOA->IDR & 0x0002) == 0x0002) {
-      GPIOD->ODR |= 0x4000;
-    } else {
-      GPIOD->ODR &= ~0x4000;
-    }
   }
 }
 
 void init_TIM4() {
+  // Initializing PB6 as TIM4 Channel 1 
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
+  GPIOB->MODER |= 0x00002000;
+  GPIOB->OTYPER |= 0x00000000;
+  GPIOB->AFR[0] |= 0x02000000;
+  GPIOA->PUPDR &= ~0x00030000;
+  GPIOA->PUPDR |= 0x00020000;
+
+  // Initializing TIM4 in PWM mode
   RCC->APB1ENR |= RCC_APB1ENR_TIM4EN;
-  TIM4->PSC = 0x20d0 - 0x0001; // psc = 8400 -> clock: 10000
-  TIM4->ARR = 0x02710;         // arr = 10000 -> period: 1s
+  TIM4->PSC = 0x1068 - 0x0001;        // psc = 4200 -> clock: 20000
+  TIM4->ARR = 0x03E8;                 // arr = 1000 -> period: 50ms
   TIM4->CCMR1 |= (TIM_CCMR1_OC1PE) | (TIM_CCMR1_OC1M_2) | (TIM_CCMR1_OC1M_1);
   TIM4->CCER &= ~(TIM_CCER_CC1P);
   TIM4->CR1 |= (TIM_CR1_ARPE) | (TIM_CR1_URS);
 
-  TIM4->CCR1 = 0x1388; // ccr = 500  | duty cycle 50%
-  // TIM4->CCR1 = 0x09c4; // ccr = 250 | duty cycle 25%
-
-  TIM4->EGR |= TIM_EGR_UG;       // update event, reload all config
-  TIM4->CCER |= (TIM_CCER_CC1E); // activate capture compare mode
-  TIM4->CR1 |= TIM_CR1_CEN;      // start counter
-                                 // GPIOD->ODR &= ~0x0040;
+  TIM4->EGR |= TIM_EGR_UG;        // update event, reload all config
+  TIM4->CCER |= TIM_CCER_CC1E;    // activate capture compare mode
+  TIM4->CR1 |= TIM_CR1_CEN;       // start counter
 }
 
 void init_TIM1() {
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN; // enable clock for GPIOA
+  // Initializing PA8 as TIM8 Channel 1
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
   GPIOA->MODER &= ~GPIO_MODER_MODER8;
-  GPIOA->MODER |= GPIO_MODER_MODER8_1; // activate alternate function on PA8
+  GPIOA->MODER |= GPIO_MODER_MODER8_1;
   GPIOA->AFR[1] |= 0x00000001;
 
-  RCC->APB2ENR |= RCC_APB2ENR_TIM1EN; // enable TIM1 on APB2
-  TIM1->PSC = 0x41a0 - 0x0001;        // psc = 16800 -> clock: 10000
-  TIM1->ARR = 0x4e20;                 // arr = 20000 period: 2s
+  // Initializing TIM1 in input PWM mode
+  RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
+  TIM1->PSC = 0x20D0 - 0x0001;        // psc = 8400 -> clock: 20000
+  TIM1->ARR = 0x07D0;                 // arr = 2000 period: 100ms
   TIM1->CR1 = 0x0000;
   TIM1->CR2 = 0x0000;
 
@@ -141,17 +151,21 @@ void init_TIM1() {
 }
 
 void TIM1_CC_IRQHandler(void) {
-  printUSART2("IRQ\n");
+  // printUSART2("IRQ\n");
   if (TIM1->SR & TIM_SR_CC1IF) {
-    // Your code to handle the captured data
-    uint16_t capturedValue = TIM1->CCR1;
-    uint16_t capturedValue2 = TIM1->CCR2;
-    // Do something with capturedValue
-    printUSART2("Period: ");
-    printUSART2("%xw\n", capturedValue);
-    printUSART2("Duty C: ");
-    printUSART2("%xw", capturedValue2);
-    printUSART2("\n\n");
+    uint16_t capturedPeriod = TIM1->CCR1;
+    uint16_t capturedDutyCycle = TIM1->CCR2;
+
+    if (capturedPeriod >= PERIOD_MARGIN_LOW && capturedPeriod <= PERIOD_MARGIN_HIGH) {
+      if (capturedDutyCycle >= IR_MARGIN_1 && capturedDutyCycle <= IR_MARGIN_2) {
+        pwm_recieved_bits |= 0x0001 << irq_counter;
+        irq_counter++;
+      } else if (capturedDutyCycle >= IR_MARGIN_0 && capturedDutyCycle <= IR_MARGIN_1) {
+        irq_counter++;
+      }
+    }
+
+    printUSART2("Period: %xw\nDuty C: %xw\n\n", capturedPeriod, capturedDutyCycle);
   }
   // Clear the interrupt flag
   TIM1->SR &= ~TIM_SR_CC1IF;
