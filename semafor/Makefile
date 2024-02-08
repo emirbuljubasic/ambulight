@@ -62,3 +62,5 @@ upload: proj
 	$(STLINK)/st-flash write $(PROJ_NAME).bin 0x08000000
 	#../flash_write_counter	
 reload: clean all upload
+debug: 
+	picocom /dev/ttyUSB0 -b 115200
