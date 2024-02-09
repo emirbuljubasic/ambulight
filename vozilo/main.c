@@ -9,9 +9,17 @@
 #define IR_MARGIN_2 600
 #define PERIOD_MARGIN_LOW 900
 #define PERIOD_MARGIN_HIGH 1100
+// #define IR_50 5000
+// #define IR_25 2500
+// #define IR_MARGIN_0 1500
+// #define IR_MARGIN_1 3500
+// #define IR_MARGIN_2 6000
+// #define PERIOD_MARGIN_LOW 9000
+// #define PERIOD_MARGIN_HIGH 11000
 
 volatile irq_counter = 0;
 uint16_t pwm_recieved_bits = 0x0000;
+uint16_t ambulance_id = 0xCA3A;
 
 void init_TIM4();
 void init_TIM1();
@@ -37,9 +45,8 @@ int main(void) {
   uint8_t pwm_arr_size = 16;
   uint16_t pwm[16] = {IR_25, IR_50, IR_25, IR_50, 
                       IR_50, IR_50, IR_25, IR_25, 
-                      IR_25, IR_25, IR_50, IR_50, 
-                      IR_25, IR_50, IR_25, IR_50}; // LSB FIRST!!
-  uint16_t ambulance_id = 0xAC3A;
+                      IR_25, IR_50, IR_25, IR_50, 
+                      IR_25, IR_25, IR_50, IR_50}; // LSB FIRST!!
   uint8_t pwm_cnt = 0;
   uint8_t lights_on = 0;
 
@@ -108,6 +115,8 @@ void init_TIM4() {
   RCC->APB1ENR |= RCC_APB1ENR_TIM4EN;
   TIM4->PSC = 0x1068 - 0x0001;        // psc = 4200 -> clock: 20000
   TIM4->ARR = 0x03E8;                 // arr = 1000 -> period: 50ms
+  // TIM4->PSC = 0x1068 - 0x0001;        // psc = 4200 -> clock: 20000
+  // TIM4->ARR = 0x2710;                 // arr = 10000 -> period: 500ms
   TIM4->CCMR1 |= (TIM_CCMR1_OC1PE) | (TIM_CCMR1_OC1M_2) | (TIM_CCMR1_OC1M_1);
   TIM4->CCER &= ~(TIM_CCER_CC1P);
   TIM4->CR1 |= (TIM_CR1_ARPE) | (TIM_CR1_URS);
@@ -128,6 +137,8 @@ void init_TIM1() {
   RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
   TIM1->PSC = 0x20D0 - 0x0001;        // psc = 8400 -> clock: 20000
   TIM1->ARR = 0x07D0;                 // arr = 2000 period: 100ms
+  // TIM1->PSC = 0x20D0 - 0x0001;        // psc = 8400 -> clock: 20000
+  // TIM1->ARR = 0x4E20;                 // arr = 20000 period: 1000ms
   TIM1->CR1 = 0x0000;
   TIM1->CR2 = 0x0000;
 
@@ -155,17 +166,29 @@ void TIM1_CC_IRQHandler(void) {
   if (TIM1->SR & TIM_SR_CC1IF) {
     uint16_t capturedPeriod = TIM1->CCR1;
     uint16_t capturedDutyCycle = TIM1->CCR2;
-
+//IRQ counter = %xw\nID bit = %xw\n
     if (capturedPeriod >= PERIOD_MARGIN_LOW && capturedPeriod <= PERIOD_MARGIN_HIGH) {
+      // printUSART2("Period: %xw\nDuty C: %xw\n\n", irq_counter, ambulance_id & (0x0001 << irq_counter), capturedPeriod, capturedDutyCycle);
       if (capturedDutyCycle >= IR_MARGIN_1 && capturedDutyCycle <= IR_MARGIN_2) {
-        pwm_recieved_bits |= 0x0001 << irq_counter;
-        irq_counter++;
+        if (ambulance_id & (0x0001 << irq_counter)) { // ako je ambulance_id[irq_counter] == 1
+          pwm_recieved_bits |= (0x0001 << irq_counter);
+          irq_counter++;
+        } else {
+          irq_counter = 0;
+          pwm_recieved_bits = 0;
+          // printUSART2("BYE!\n\n");
+        }
       } else if (capturedDutyCycle >= IR_MARGIN_0 && capturedDutyCycle <= IR_MARGIN_1) {
-        irq_counter++;
+        if (!(ambulance_id & (0x0001 << irq_counter))) { // ako je ambulance_id[irq_counter] == 0
+          irq_counter++;
+        } else {
+          irq_counter = 0;
+          pwm_recieved_bits = 0;
+          // printUSART2("BYE!\n\n");
+        }
       }
     }
 
-    printUSART2("Period: %xw\nDuty C: %xw\n\n", capturedPeriod, capturedDutyCycle);
   }
   // Clear the interrupt flag
   TIM1->SR &= ~TIM_SR_CC1IF;
