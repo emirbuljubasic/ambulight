@@ -44,28 +44,6 @@ void delay_us(uint32_t us) { /// delay in us
   RCC->APB1ENR &= ~RCC_APB1ENR_TIM12EN; // disable TIM4
 }
 
-void delay_250ns(uint32_t us) { /// delay in us
-
-  RCC->APB1ENR |= RCC_APB1ENR_TIM12EN; //
-  TIM12->PSC = 0x0001 - 0x0001;        //
-                                       //
-  TIM12->ARR = 0x0015;                 // reload value set to 1 us
-  TIM12->CR1 = 0x0084;                 // ARPE On, CMS disable, Up counting
-                                       // UEV disable, TIM4 enable(p392)
-
-  TIM12->EGR |= TIM_EGR_UG;  // reload all config p363
-  TIM12->CR1 |= TIM_CR1_CEN; // start counter
-  while (us > 0) {
-    while ((TIM12->SR & TIM_SR_UIF) == 0x0000)
-      ; // wait for update event
-
-    TIM12->SR &= ~TIM_SR_UIF; // clear the update event interrupt flag
-    us--;
-  }
-  TIM12->CR1 &= ~TIM_CR1_CEN;           // stop counter
-  RCC->APB1ENR &= ~RCC_APB1ENR_TIM12EN; // disable TIM4
-}
-
 void initSTOPWATCH(void) {            /// us resolution
   RCC->APB1ENR |= RCC_APB1ENR_TIM5EN; // enable TIM5
   TIM5->PSC = 0x0054 - 0x0001; // set TIM5 counting prescaler to 84 (p406)

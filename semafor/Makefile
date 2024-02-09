@@ -13,7 +13,7 @@ STM_COMMON=/home/$(USER)/msut/STM32F407
 # Put your source files here (or *.c, etc)
 SRCS = main.c system_stm32f4xx.c 
 SRCS += delay.c 
-SRCS += usart.c misc.c 
+SRCS += usart.c misc.c ws2812b.c semafor.c
 
 # Normally you shouldn't need to change anything below this line!
 #######################################################################################

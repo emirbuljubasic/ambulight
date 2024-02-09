@@ -8,7 +8,6 @@
 
 void delay_ms(uint32_t ms); //
 void delay_us(uint32_t ms); //
-void delay_250ns(uint32_t ms);
 
 void initSTOPWATCH(void);
 void startSTOPWATCH(void);
