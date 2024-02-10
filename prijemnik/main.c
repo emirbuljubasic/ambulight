@@ -19,6 +19,11 @@ void init_TIM1();
 void init_TIM8();
 
 int main(void) {
+	initUSART2(USART2_BAUDRATE_921600);
+	printUSART2("\nwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n");
+	printUSART2(" Starting detector...");
+	printUSART2("\nwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n");
+
 	init_TIM1();
 	init_TIM8();
 
@@ -27,12 +32,6 @@ int main(void) {
 	GPIOC->MODER &= ~GPIO_MODER_MODER2;
 	GPIOC->MODER |= GPIO_MODER_MODER2_0;
 	GPIOC->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR2;
-
-	initUSART2(USART2_BAUDRATE_921600);
-	printUSART2("\nwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n");
-	printUSART2(" Starting detector...");
-	printUSART2("\nwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n");
-
 
 	while(1) {
 		if (irq_counter == pwm_arr_size) {
