@@ -2,3 +2,4 @@
 /home/emir/msut/STM32F407/Libraries/CMSIS/Include/
 -I
 /home/emir/msut/STM32F407/Libraries/CMSIS/ST/STM32F4xx/Include/
+-Iinc

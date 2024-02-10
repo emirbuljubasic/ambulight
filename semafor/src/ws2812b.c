@@ -4,39 +4,30 @@ volatile uint8_t tc_flag = 0;
 
 void init_TIM4() {
   /// wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-  ///  setup PWM on TIM4 CH1, CH2, CH3 & CH4 -> PD12, PD13, PD14 & PD15
+  ///  setup PWM on TIM4 CH3 -> PD14
   ///----------------------------------------------------------------
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN; //
-  GPIOD->MODER |= 0xAA000000;          //
-  GPIOD->OTYPER |= 0x00000000;         //
-  GPIOD->AFR[1] |= 0x22220000;         //
-  // GPIOD->OSPEEDR &= ~GPIO_OSPEEDER_OSPEEDR14;
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;
+  GPIOD->MODER |= 0xAA000000;
+  GPIOD->OTYPER |= 0x00000000;
+  GPIOD->AFR[1] |= 0x22220000;
 
   RCC->APB1ENR |= RCC_APB1ENR_TIM4EN; // enable TIM4 on APB1
   TIM4->PSC = 0x0001 - 0x0001;        // 1 - 1
-  TIM4->ARR = 0x0069 - 0x0001;        // period of the PWM 1.25us
-  // 105
-  // TIM4->CCR1 = 0x0000; // duty cycle for the PWM set to 0%
-  // TIM4->CCR2 = 0x0000;
-  // TIM4->CCR3 = 0x0000;
-  // TIM4->CCR4 = 0x0000;
+  TIM4->ARR = 0x0069 - 0x0001;        // 105 -> period of the PWM 1.25us
 
-  TIM4->CCMR1 |= (TIM_CCMR1_OC1PE) | (TIM_CCMR1_OC1M_2) | (TIM_CCMR1_OC1M_1);
-  TIM4->CCMR1 |= (TIM_CCMR1_OC2PE) | (TIM_CCMR1_OC2M_2) | (TIM_CCMR1_OC2M_1);
   TIM4->CCMR2 |= (TIM_CCMR2_OC3PE) | (TIM_CCMR2_OC3M_2) | (TIM_CCMR2_OC3M_1);
-  TIM4->CCMR2 |= (TIM_CCMR2_OC4PE) | (TIM_CCMR2_OC4M_2) | (TIM_CCMR2_OC4M_1);
   // set PWM 1 mod, enable OC1PE preload mode
 
   // set active mode high for pulse polarity
-  TIM4->CCER &=
-      ~((TIM_CCER_CC1P) | (TIM_CCER_CC2P) | (TIM_CCER_CC3P) | (TIM_CCER_CC4P));
+  TIM4->CCER &= ~(TIM_CCER_CC3P);
+
   TIM4->CR1 |= (TIM_CR1_ARPE) | (TIM_CR1_URS);
 
   // update event, reload all config
   TIM4->EGR |= TIM_EGR_UG;
+
   // activate capture compare mode
-  TIM4->CCER |=
-      (TIM_CCER_CC1E) | (TIM_CCER_CC2E) | (TIM_CCER_CC3E) | (TIM_CCER_CC4E);
+  TIM4->CCER |= (TIM_CCER_CC3E);
 
   TIM4->DIER |= TIM_DIER_CC3DE | TIM_DIER_TDE;
   TIM4->EGR |= TIM_EGR_CC3G;
@@ -87,6 +78,13 @@ void set_led(uint16_t index, uint8_t red, uint8_t green, uint8_t blue) {
   rgb[index].colors.blue = blue;
   rgb[index].colors.red = red;
   rgb[index].colors.green = green;
+}
+
+void set_led_range(uint16_t low, uint16_t high, uint8_t red, uint8_t green,
+                   uint8_t blue) {
+  for (; low < high; ++low) {
+    set_led(low, red, green, blue);
+  }
 }
 
 void send_data(void) {

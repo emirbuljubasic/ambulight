@@ -11,9 +11,10 @@ PROJ_NAME=main
 STM_COMMON=/home/$(USER)/msut/STM32F407
 
 # Put your source files here (or *.c, etc)
-SRCS = main.c system_stm32f4xx.c 
-SRCS += delay.c 
-SRCS += usart.c misc.c ws2812b.c semafor.c
+#SRCS = src/main.c system_stm32f4xx.c 
+#SRCS += delay.c 
+#SRCS += usart.c misc.c ws2812b.c semafor.c
+SRCS = src/*
 
 # Normally you shouldn't need to change anything below this line!
 #######################################################################################
@@ -22,7 +23,7 @@ CC = $(GNUGCC)/arm-none-eabi-gcc
 OBJCOPY = $(GNUGCC)/arm-none-eabi-objcopy
 SIZE =  $(GNUGCC)/arm-none-eabi-size
 
-CFLAGS  = -g -O2 -Wfatal-errors -Tstm32_flash.ld 
+CFLAGS  = -g -O0 -Wfatal-errors -Tstm32_flash.ld -Iinc
 CFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m4 -mthumb-interwork
 CFLAGS += -DSL_FULL -DDEBUG
 # important flag is -fsingle-precision-constant which prevents the double precision emulation
