@@ -10,7 +10,7 @@
 #define PERIOD_MARGIN_LOW 900
 #define PERIOD_MARGIN_HIGH 1100
 
-volatile irq_counter = 0;
+uint8_t irq_counter = 0;
 uint16_t pwm_recieved_bits = 0x0000;
 uint16_t ambulance_id = 0xCA3A;
 uint8_t pwm_arr_size = 16;
@@ -19,31 +19,27 @@ void init_TIM1();
 void init_TIM8();
 
 int main(void) {
-	initUSART2(USART2_BAUDRATE_921600);
-	uint32_t time;
-
 	init_TIM1();
 	init_TIM8();
 
-	// Initialize PC2 as Reciever output (triggers traffic light EXTI interrupt)
+	// Initialize PC2 as Detector output (triggers traffic light EXTI interrupt)
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN;
+	GPIOC->MODER &= ~GPIO_MODER_MODER2;
 	GPIOC->MODER |= GPIO_MODER_MODER2_0;
 	GPIOC->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR2;
-	GPIOC->OTYPER |= 0x00000000;
-	GPIOC->PUPDR &= ~(GPIO_PUPDR_PUPDR2);
-	GPIOC->PUPDR |= (GPIO_PUPDR_PUPDR2_1);
 
-	printUSART2("-> SYS: init completed\n\n");
+	initUSART2(USART2_BAUDRATE_921600);
+	printUSART2("\nwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n");
+	printUSART2(" Starting detector...");
+	printUSART2("\nwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n");
+
 
 	while(1) {
 		if (irq_counter == pwm_arr_size) {
-			GPIOC->ODR ^= 0x0004;
+			GPIOC->ODR |= 0x0004;
 			TIM8->CNT |= 0xFFFF;
 			irq_counter = 0;
-			pwm_recieved_bits = 0x0000;
-
-			printUSART2("GREAT SUCCESS!\n");
-			printUSART2("%xw\n", pwm_recieved_bits);
+            printUSART2("Ambulance code recieved!\n\n");
 		}
 	}
 }
@@ -66,10 +62,9 @@ void init_TIM8() {
 
 void TIM8_UP_TIM13_IRQHandler() {
 	if (TIM8->SR & TIM_SR_UIF) {
-		// printUSART2("Timer done!\n\n");
 		GPIOC->ODR &= ~0x0004;
 		irq_counter = 0;
-		pwm_recieved_bits = 0x0000;
+		printUSART2("TIMEOUT -> Return to normal state!\n\n");
 	}
 
 	TIM8->SR &= ~TIM_SR_UIF;
@@ -110,17 +105,16 @@ void init_TIM1() {
 
 void TIM1_CC_IRQHandler(void) {
 	if (TIM1->SR & TIM_SR_CC1IF) {
+    printUSART2("Period: %xw\nDuty C: %xw\n\n", TIM1->CCR1, TIM1->CCR2);
 		uint16_t current_bit = ambulance_id & (0x0001 << irq_counter);
 		if (TIM1->CCR1 >= PERIOD_MARGIN_LOW && TIM1->CCR1 <= PERIOD_MARGIN_HIGH && TIM1->CCR2 >= IR_MARGIN_0 && TIM1->CCR2 <= IR_MARGIN_2) {
 			if ((TIM1->CCR2 >= IR_MARGIN_1 && current_bit) || (TIM1->CCR2 <= IR_MARGIN_1 && !current_bit)) {
-				// pwm_recieved_bits |= (current_bit << irq_counter);
 				irq_counter++;
 			} else {
 				irq_counter = 0;
-				pwm_recieved_bits = 0;
 			}
 		}
 	}
-	// Clear the interrupt flag
+
 	TIM1->SR &= ~TIM_SR_CC1IF;
 }
