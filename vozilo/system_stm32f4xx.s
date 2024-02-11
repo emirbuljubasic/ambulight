@@ -25,99 +25,119 @@
 SystemInit:
 .LFB110:
 	.file 1 "system_stm32f4xx.c"
-	.loc 1 205 0
+	.loc 1 222 0
 	.cfi_startproc
 	@ args = 0, pretend = 0, frame = 8
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
-	.loc 1 208 0
-	ldr	r3, .L18
-	.loc 1 217 0
-	ldr	r0, .L18+4
-	.loc 1 208 0
+	.loc 1 225 0
+	ldr	r1, .L20
+	.loc 1 229 0
+	ldr	r3, .L20+4
+	.loc 1 225 0
+	ldr	r2, [r1, #136]
+	.loc 1 238 0
+	ldr	r0, .L20+8
+	.loc 1 225 0
+	orr	r2, r2, #15728640
+	str	r2, [r1, #136]
+	.loc 1 229 0
 	ldr	r2, [r3]
-	.loc 1 211 0
+	.loc 1 232 0
 	movs	r1, #0
-	.loc 1 208 0
+	.loc 1 229 0
 	orr	r2, r2, #1
 	str	r2, [r3]
-	.loc 1 211 0
+	.loc 1 232 0
 	str	r1, [r3, #8]
-	.loc 1 214 0
+	.loc 1 235 0
 	ldr	r2, [r3]
 	bic	r2, r2, #17301504
 	bic	r2, r2, #65536
 	str	r2, [r3]
-	.loc 1 217 0
+	.loc 1 238 0
 	str	r0, [r3, #4]
-	.loc 1 220 0
+	.loc 1 241 0
 	ldr	r2, [r3]
-	.loc 1 205 0
+	.loc 1 222 0
 	sub	sp, sp, #8
 	.cfi_def_cfa_offset 8
-	.loc 1 220 0
+	.loc 1 241 0
 	bic	r2, r2, #262144
 	str	r2, [r3]
-	.loc 1 223 0
+	.loc 1 244 0
 	str	r1, [r3, #12]
 .LBB4:
 .LBB5:
-	.loc 1 340 0
+	.loc 1 359 0
 	str	r1, [sp]
 	str	r1, [sp, #4]
-	.loc 1 343 0
+	.loc 1 362 0
 	ldr	r2, [r3]
 	orr	r2, r2, #65536
 	str	r2, [r3]
-	.loc 1 348 0
+	.loc 1 367 0
 	mov	r2, r3
 	b	.L3
-.L17:
-	.loc 1 350 0
+.L19:
+	.loc 1 369 0
 	ldr	r3, [sp]
 	cmp	r3, #1280
 	beq	.L2
 .L3:
-	.loc 1 348 0
+	.loc 1 367 0
 	ldr	r3, [r2]
 	and	r3, r3, #131072
 	str	r3, [sp, #4]
-	.loc 1 349 0
+	.loc 1 368 0
 	ldr	r3, [sp]
 	adds	r3, r3, #1
 	str	r3, [sp]
-	.loc 1 350 0
+	.loc 1 369 0
 	ldr	r3, [sp, #4]
 	cmp	r3, #0
-	beq	.L17
+	beq	.L19
 .L2:
-	.loc 1 352 0
-	ldr	r3, .L18
+	.loc 1 371 0
+	ldr	r3, .L20+4
 	ldr	r3, [r3]
 	ands	r3, r3, #131072
-	.loc 1 354 0
+	.loc 1 373 0
 	it	ne
 	movne	r3, #1
-	.loc 1 358 0
+	.loc 1 377 0
 	str	r3, [sp, #4]
-	.loc 1 361 0
+	.loc 1 380 0
 	ldr	r3, [sp, #4]
 	cmp	r3, #1
 	beq	.L6
-.L9:
+.L10:
+	.loc 1 429 0
+	ldr	r2, .L20+4
+	.loc 1 432 0
+	ldr	r1, .L20+12
+	.loc 1 429 0
+	ldr	r3, [r2, #8]
+	bic	r3, r3, #8388608
+	str	r3, [r2, #8]
+	.loc 1 432 0
+	str	r1, [r2, #132]
+	.loc 1 435 0
+	ldr	r3, [r2]
+	orr	r3, r3, #67108864
+	str	r3, [r2]
+.L7:
+	.loc 1 438 0
+	ldr	r3, [r2]
+	lsls	r3, r3, #4
+	bpl	.L7
 .LBE5:
 .LBE4:
-	.loc 1 233 0
-	ldr	r3, .L18+8
-	ldr	r2, [r3, #136]
-	.loc 1 238 0
-	mov	r1, #134217728
-	.loc 1 233 0
-	orr	r2, r2, #15728640
-	str	r2, [r3, #136]
-	.loc 1 238 0
-	str	r1, [r3, #8]
-	.loc 1 240 0
+	.loc 1 258 0
+	ldr	r3, .L20
+	mov	r2, #134217728
+	str	r2, [r3, #8]
+	.loc 1 260 0
 	add	sp, sp, #8
 	.cfi_remember_state
 	.cfi_def_cfa_offset 0
@@ -127,71 +147,72 @@ SystemInit:
 	.cfi_restore_state
 .LBB7:
 .LBB6:
-	.loc 1 364 0
-	ldr	r3, .L18
-	.loc 1 365 0
-	ldr	r1, .L18+12
-	.loc 1 364 0
+	.loc 1 383 0
+	ldr	r3, .L20+4
+	.loc 1 384 0
+	ldr	r1, .L20+16
+	.loc 1 383 0
 	ldr	r2, [r3, #64]
-	.loc 1 377 0
-	ldr	r0, .L18+16
-	.loc 1 364 0
+	.loc 1 396 0
+	ldr	r0, .L20+20
+	.loc 1 383 0
 	orr	r2, r2, #268435456
 	str	r2, [r3, #64]
-	.loc 1 365 0
+	.loc 1 384 0
 	ldr	r2, [r1]
 	orr	r2, r2, #16384
 	str	r2, [r1]
-	.loc 1 368 0
+	.loc 1 387 0
 	ldr	r2, [r3, #8]
 	str	r2, [r3, #8]
-	.loc 1 371 0
+	.loc 1 390 0
 	ldr	r2, [r3, #8]
 	orr	r2, r2, #32768
 	str	r2, [r3, #8]
-	.loc 1 374 0
+	.loc 1 393 0
 	ldr	r2, [r3, #8]
 	orr	r2, r2, #5120
 	str	r2, [r3, #8]
-	.loc 1 377 0
+	.loc 1 396 0
 	str	r0, [r3, #4]
-	.loc 1 381 0
+	.loc 1 400 0
 	ldr	r2, [r3]
 	orr	r2, r2, #16777216
 	str	r2, [r3]
-	.loc 1 384 0
+	.loc 1 403 0
 	mov	r2, r3
-.L7:
+.L8:
 	ldr	r1, [r2]
-	ldr	r3, .L18
+	ldr	r3, .L20+4
 	lsls	r1, r1, #6
-	bpl	.L7
-	.loc 1 389 0
-	ldr	r2, .L18+20
+	bpl	.L8
+	.loc 1 408 0
+	ldr	r2, .L20+24
 	movw	r1, #1541
 	str	r1, [r2]
-	.loc 1 392 0
+	.loc 1 411 0
 	ldr	r2, [r3, #8]
 	bic	r2, r2, #3
 	str	r2, [r3, #8]
-	.loc 1 393 0
+	.loc 1 412 0
 	ldr	r2, [r3, #8]
 	orr	r2, r2, #2
 	str	r2, [r3, #8]
-	.loc 1 396 0
+	.loc 1 415 0
 	mov	r2, r3
-.L8:
+.L9:
 	ldr	r3, [r2, #8]
 	and	r3, r3, #12
 	cmp	r3, #8
-	bne	.L8
-	b	.L9
-.L19:
+	bne	.L9
+	b	.L10
+.L21:
 	.align	2
-.L18:
+.L20:
+	.word	-536810240
 	.word	1073887232
 	.word	603992080
-	.word	-536810240
+	.word	805322880
 	.word	1073770496
 	.word	121656328
 	.word	1073888256
@@ -207,86 +228,86 @@ SystemInit:
 	.type	SystemCoreClockUpdate, %function
 SystemCoreClockUpdate:
 .LFB111:
-	.loc 1 279 0
+	.loc 1 299 0
 	.cfi_startproc
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
 .LVL0:
-	.loc 1 283 0
-	ldr	r0, .L29
+	.loc 1 303 0
+	ldr	r0, .L31
 	ldr	r3, [r0, #8]
 .LVL1:
 	and	r3, r3, #12
 .LVL2:
-	.loc 1 285 0
+	.loc 1 305 0
 	cmp	r3, #4
-	beq	.L22
+	beq	.L24
 	cmp	r3, #8
-	beq	.L23
-	ldr	r3, .L29+4
+	beq	.L25
+	ldr	r3, .L31+4
 .LVL3:
-.L21:
-	.loc 1 322 0
-	ldr	r2, .L29
-	ldr	r1, .L29+8
+.L23:
+	.loc 1 341 0
+	ldr	r2, .L31
+	ldr	r1, .L31+8
 	ldr	r2, [r2, #8]
 	ubfx	r2, r2, #4, #4
 	ldrb	r2, [r1, r2]	@ zero_extendqisi2
 .LVL4:
-	.loc 1 324 0
+	.loc 1 343 0
 	lsrs	r3, r3, r2
 	str	r3, [r1, #16]
 	bx	lr
 .LVL5:
-.L23:
-	.loc 1 299 0
+.L25:
+	.loc 1 318 0
 	ldr	r3, [r0, #4]
 .LVL6:
-	.loc 1 300 0
+	.loc 1 319 0
 	ldr	r1, [r0, #4]
-	.loc 1 302 0
+	.loc 1 321 0
 	tst	r3, #4194304
-	.loc 1 305 0
+	.loc 1 324 0
 	ldr	r3, [r0, #4]
 .LVL7:
 	it	ne
-	ldrne	r0, .L29+12
-	.loc 1 300 0
+	ldrne	r0, .L31+12
+	.loc 1 319 0
 	and	r2, r1, #63
 .LVL8:
-	.loc 1 310 0
+	.loc 1 329 0
 	ite	eq
-	ldreq	r1, .L29+4
-	.loc 1 305 0
+	ldreq	r1, .L31+4
+	.loc 1 324 0
 	udivne	r1, r0, r2
-	.loc 1 310 0
+	.loc 1 329 0
 	ubfx	r3, r3, #6, #9
 	it	eq
 	udiveq	r1, r1, r2
 	mul	r2, r1, r3
 .LVL9:
-	.loc 1 313 0
-	ldr	r3, .L29
+	.loc 1 332 0
+	ldr	r3, .L31
 	ldr	r3, [r3, #4]
 .LVL10:
 	ubfx	r3, r3, #16, #2
 .LVL11:
 	adds	r3, r3, #1
 	lsls	r3, r3, #1
-	.loc 1 314 0
+	.loc 1 333 0
 	udiv	r3, r2, r3
-	.loc 1 315 0
-	b	.L21
+	.loc 1 334 0
+	b	.L23
 .LVL12:
-.L22:
-	.loc 1 293 0
-	ldr	r3, .L29+12
+.L24:
+	.loc 1 312 0
+	ldr	r3, .L31+12
 .LVL13:
-	b	.L21
-.L30:
+	b	.L23
+.L32:
 	.align	2
-.L29:
+.L31:
 	.word	1073887232
 	.word	16000000
 	.word	.LANCHOR0
@@ -887,24 +908,24 @@ SystemCoreClock:
 	.uleb128 0x10
 	.4byte	.LASF81
 	.byte	0x1
-	.2byte	0x14f
+	.2byte	0x162
 	.byte	0x1
 	.4byte	0x4cb
 	.uleb128 0x11
 	.4byte	.LASF67
 	.byte	0x1
-	.2byte	0x154
+	.2byte	0x167
 	.4byte	0xca
 	.uleb128 0x11
 	.4byte	.LASF68
 	.byte	0x1
-	.2byte	0x154
+	.2byte	0x167
 	.4byte	0xca
 	.byte	0
 	.uleb128 0x12
 	.4byte	.LASF69
 	.byte	0x1
-	.byte	0xcc
+	.byte	0xdd
 	.4byte	.LFB110
 	.4byte	.LFE110-.LFB110
 	.uleb128 0x1
@@ -915,7 +936,7 @@ SystemCoreClock:
 	.4byte	.LBB4
 	.4byte	.Ldebug_ranges0+0
 	.byte	0x1
-	.byte	0xe7
+	.byte	0xfc
 	.uleb128 0x14
 	.4byte	.Ldebug_ranges0+0
 	.uleb128 0x15
@@ -934,7 +955,7 @@ SystemCoreClock:
 	.uleb128 0x16
 	.4byte	.LASF70
 	.byte	0x1
-	.2byte	0x116
+	.2byte	0x12a
 	.4byte	.LFB111
 	.4byte	.LFE111-.LFB111
 	.uleb128 0x1
@@ -943,31 +964,31 @@ SystemCoreClock:
 	.uleb128 0x17
 	.ascii	"tmp\000"
 	.byte	0x1
-	.2byte	0x118
+	.2byte	0x12c
 	.4byte	0xb8
 	.4byte	.LLST0
 	.uleb128 0x18
 	.4byte	.LASF71
 	.byte	0x1
-	.2byte	0x118
+	.2byte	0x12c
 	.4byte	0xb8
 	.4byte	.LLST1
 	.uleb128 0x18
 	.4byte	.LASF72
 	.byte	0x1
-	.2byte	0x118
+	.2byte	0x12c
 	.4byte	0xb8
 	.4byte	.LLST2
 	.uleb128 0x18
 	.4byte	.LASF73
 	.byte	0x1
-	.2byte	0x118
+	.2byte	0x12c
 	.4byte	0xb8
 	.4byte	.LLST3
 	.uleb128 0x18
 	.4byte	.LASF74
 	.byte	0x1
-	.2byte	0x118
+	.2byte	0x12c
 	.4byte	0xb8
 	.4byte	.LLST4
 	.byte	0
@@ -979,7 +1000,7 @@ SystemCoreClock:
 	.uleb128 0x1a
 	.4byte	.LASF76
 	.byte	0x1
-	.byte	0xac
+	.byte	0xbd
 	.4byte	0xb8
 	.uleb128 0x5
 	.byte	0x3
@@ -994,7 +1015,7 @@ SystemCoreClock:
 	.uleb128 0x1a
 	.4byte	.LASF77
 	.byte	0x1
-	.byte	0xae
+	.byte	0xbf
 	.4byte	0x5ac
 	.uleb128 0x5
 	.byte	0x3
@@ -1526,6 +1547,8 @@ SystemCoreClock:
 	.ascii	"APB1RSTR\000"
 .LASF49:
 	.ascii	"AHB2ENR\000"
+.LASF30:
+	.ascii	"ISAR\000"
 .LASF17:
 	.ascii	"sizetype\000"
 .LASF62:
@@ -1536,8 +1559,6 @@ SystemCoreClock:
 	.ascii	"PLLI2SCFGR\000"
 .LASF39:
 	.ascii	"PWR_TypeDef\000"
-.LASF80:
-	.ascii	"/home/emir/git/ambulight/vozilo\000"
 .LASF8:
 	.ascii	"__uint32_t\000"
 .LASF4:
@@ -1633,8 +1654,8 @@ SystemCoreClock:
 	.ascii	"VTOR\000"
 .LASF15:
 	.ascii	"int32_t\000"
-.LASF30:
-	.ascii	"ISAR\000"
+.LASF80:
+	.ascii	"/home/emir/msut/STM32F407/examples/audio-dac\000"
 .LASF25:
 	.ascii	"DFSR\000"
 .LASF76:

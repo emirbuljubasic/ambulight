@@ -1,19 +1,25 @@
-#ifndef __USART2_H_
-#define __USART2_H_
-
-#include <stdio.h>
-#include <stdarg.h>
-#include "stm32f4xx.h"
+#ifndef __USART_H
+#define __USART_H
+#include "delay.h"
 #include "misc.h"
+#include "stdarg.h"
+#include "stm32f4xx.h"
 
-#define USART2_BAUDRATE_921600		0x0000002D
-#define USART2_BAUDRATE_460800		0x0000005B
-#define USART2_BAUDRATE_115200		0x0000016C
-#define USART2_BAUDRATE_9600		0x00001117
+#define USART_RX_DATA_READY 0
+#define USART_RX_DATA_NOT_READY 1
+#define USART2_BAUDRATE_1500000 0x0000001C
+#define USART2_BAUDRATE_921600 0x0000002D
+#define USART2_BAUDRATE_460800 0x0000005B
+#define USART2_BAUDRATE_115200 0x0000016C
+#define USART2_BAUDRATE_9600 0x00001117
 
 void initUSART2(uint32_t baudrate);
 void putcharUSART2(uint8_t data);
-void printUSART2(char * str, ... );
-void sprintUSART2(uint8_t * str);
+void printUSART2(char *str, uint32_t *num);
+uint8_t getcharUSART2(void);
+uint8_t getRxStateUSART2(void);
+void enableRxUSART2(void);
+void printUSARTMOJ(char *str, ...);
+void sprintUSART2(uint8_t *str);
 
-#endif 
+#endif
